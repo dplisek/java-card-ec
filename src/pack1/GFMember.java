@@ -62,7 +62,7 @@ public class GFMember {
             squaringHelperBytes[(short) (2 * i + 1)] = squaringTable.getSquared(lower);
         }
         
-        for (short i = 0; i < squaringHelperBytes.length - Applet1.FIELD_WIDTH_BYTES; i++) {
+        for (short i = 0; i < (short) (squaringHelperBytes.length - Applet1.FIELD_WIDTH_BYTES); i++) {
             byte highestXorPattern = (byte) ((squaringHelperBytes[i] >>> 6) & 3);
             byte middleXorPattern = (byte) ((squaringHelperBytes[i] << 2));
             byte lowestXorPattern = (byte) (squaringHelperBytes[i] << 1);
