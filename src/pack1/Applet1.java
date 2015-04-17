@@ -14,25 +14,12 @@ import javacard.framework.*;
 public class Applet1 extends Applet {
 
     public static final short FIELD_WIDTH_BYTES = 10;
-    public static final GFMember PARAM_A = createParamA();
-    
+        
     private ProjectivePoint p = new ProjectivePoint();
     private ProjectivePoint q = new ProjectivePoint();
+    private ProjectivePoint r = new ProjectivePoint();
     
-    private static GFMember createParamA() {
-        GFMember a = new GFMember();
-        a.getBytes()[0] = (byte) 0x4A;
-        a.getBytes()[1] = (byte) 0x2E;
-        a.getBytes()[2] = (byte) 0x38;
-        a.getBytes()[3] = (byte) 0xA8;
-        a.getBytes()[4] = (byte) 0xF6;
-        a.getBytes()[5] = (byte) 0x6D;
-        a.getBytes()[6] = (byte) 0x7F;
-        a.getBytes()[7] = (byte) 0x4C;
-        a.getBytes()[8] = (byte) 0x38;
-        a.getBytes()[9] = (byte) 0x5F;
-        return a;
-    }
+    private ECAdder adder = new ECAdder(createParamA());
     
     /**
      * Installs this applet.
@@ -66,18 +53,18 @@ public class Applet1 extends Applet {
         if (selectingApplet()) ISOException.throwIt(ISO7816.SW_NO_ERROR);
         byte[] buf = checkAPDUAndGetData(apdu);
         
-        ProjectivePoint p = extractP(buf);
-        ProjectivePoint q = extractQ(buf);
-        ProjectivePoint result = ECAdder.add(p, q);
+        extractP(buf);
+        extractQ(buf);
+        adder.add(p, q, r);
         
         short lenExp = apdu.setOutgoing();
         if (lenExp < 3 * FIELD_WIDTH_BYTES) {
             ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
         }
         apdu.setOutgoingLength((short) (3 * FIELD_WIDTH_BYTES));
-        apdu.sendBytesLong(result.getX().getBytes(), (short) 0, FIELD_WIDTH_BYTES);
-        apdu.sendBytesLong(result.getY().getBytes(), (short) 0, FIELD_WIDTH_BYTES);
-        apdu.sendBytesLong(result.getZ().getBytes(), (short) 0, FIELD_WIDTH_BYTES);
+        apdu.sendBytesLong(r.getX().getBytes(), (short) 0, FIELD_WIDTH_BYTES);
+        apdu.sendBytesLong(r.getY().getBytes(), (short) 0, FIELD_WIDTH_BYTES);
+        apdu.sendBytesLong(r.getZ().getBytes(), (short) 0, FIELD_WIDTH_BYTES);
     }
 
     private byte[] checkAPDUAndGetData(APDU apdu) throws APDUException {
@@ -93,20 +80,31 @@ public class Applet1 extends Applet {
         return buf;
     }
 
-    private ProjectivePoint extractP(byte[] buf) {
-        ProjectivePoint pp = new ProjectivePoint();
-        Util.arrayCopyNonAtomic(buf, (short) (ISO7816.OFFSET_CDATA + 0 * FIELD_WIDTH_BYTES), pp.getX().getBytes(), (short) 0, FIELD_WIDTH_BYTES);
-        Util.arrayCopyNonAtomic(buf, (short) (ISO7816.OFFSET_CDATA + 1 * FIELD_WIDTH_BYTES), pp.getY().getBytes(), (short) 0, FIELD_WIDTH_BYTES);
-        Util.arrayCopyNonAtomic(buf, (short) (ISO7816.OFFSET_CDATA + 2 * FIELD_WIDTH_BYTES), pp.getZ().getBytes(), (short) 0, FIELD_WIDTH_BYTES);
-        return pp;
+    private void extractP(byte[] buf) {
+        Util.arrayCopyNonAtomic(buf, (short) (ISO7816.OFFSET_CDATA + 0 * FIELD_WIDTH_BYTES), p.getX().getBytes(), (short) 0, FIELD_WIDTH_BYTES);
+        Util.arrayCopyNonAtomic(buf, (short) (ISO7816.OFFSET_CDATA + 1 * FIELD_WIDTH_BYTES), p.getY().getBytes(), (short) 0, FIELD_WIDTH_BYTES);
+        Util.arrayCopyNonAtomic(buf, (short) (ISO7816.OFFSET_CDATA + 2 * FIELD_WIDTH_BYTES), p.getZ().getBytes(), (short) 0, FIELD_WIDTH_BYTES);
     }
     
-    private ProjectivePoint extractQ(byte[] buf) {
-        ProjectivePoint pp = new ProjectivePoint();
-        Util.arrayCopyNonAtomic(buf, (short) (ISO7816.OFFSET_CDATA + 3 * FIELD_WIDTH_BYTES), pp.getX().getBytes(), (short) 0, FIELD_WIDTH_BYTES);
-        Util.arrayCopyNonAtomic(buf, (short) (ISO7816.OFFSET_CDATA + 4 * FIELD_WIDTH_BYTES), pp.getY().getBytes(), (short) 0, FIELD_WIDTH_BYTES);
-        Util.arrayCopyNonAtomic(buf, (short) (ISO7816.OFFSET_CDATA + 5 * FIELD_WIDTH_BYTES), pp.getZ().getBytes(), (short) 0, FIELD_WIDTH_BYTES);
-        return pp;
+    private void extractQ(byte[] buf) {
+        Util.arrayCopyNonAtomic(buf, (short) (ISO7816.OFFSET_CDATA + 3 * FIELD_WIDTH_BYTES), q.getX().getBytes(), (short) 0, FIELD_WIDTH_BYTES);
+        Util.arrayCopyNonAtomic(buf, (short) (ISO7816.OFFSET_CDATA + 4 * FIELD_WIDTH_BYTES), q.getY().getBytes(), (short) 0, FIELD_WIDTH_BYTES);
+        Util.arrayCopyNonAtomic(buf, (short) (ISO7816.OFFSET_CDATA + 5 * FIELD_WIDTH_BYTES), q.getZ().getBytes(), (short) 0, FIELD_WIDTH_BYTES);
+    }
+
+    private GFMember createParamA() {
+        GFMember a = new GFMember();
+        a.getBytes()[0] = (byte) 0x4A;
+        a.getBytes()[1] = (byte) 0x2E;
+        a.getBytes()[2] = (byte) 0x38;
+        a.getBytes()[3] = (byte) 0xA8;
+        a.getBytes()[4] = (byte) 0xF6;
+        a.getBytes()[5] = (byte) 0x6D;
+        a.getBytes()[6] = (byte) 0x7F;
+        a.getBytes()[7] = (byte) 0x4C;
+        a.getBytes()[8] = (byte) 0x38;
+        a.getBytes()[9] = (byte) 0x5F;
+        return a;
     }
 
 }

@@ -26,11 +26,4 @@ public class ProjectivePoint {
     public GFMember getZ() {
         return z;
     }
-
-    public static ProjectivePoint createInfinity() {
-        ProjectivePoint inf = new ProjectivePoint();
-        inf.x = GFMember.createOne();
-        inf.y = GFMember.createOne();
-        return inf;
-    }
 }

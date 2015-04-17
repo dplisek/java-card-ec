@@ -11,8 +11,14 @@ package pack1;
  */
 public class ECAdder {
     
-    public static ProjectivePoint add(ProjectivePoint p0, ProjectivePoint p1) {
-        return ECDifferentAdder.addDifferent(p0, p1);
+    private ECDifferentAdder differentAdder;
+    
+    public ECAdder(GFMember a) {
+        differentAdder = new ECDifferentAdder(a);
+    }
+    
+    public void add(ProjectivePoint p0, ProjectivePoint p1, ProjectivePoint p2) {
+        differentAdder.addDifferent(p0, p1, p2);
     }
 
 }

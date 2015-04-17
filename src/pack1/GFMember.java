@@ -20,8 +20,8 @@ public class GFMember {
     }
 
     public boolean isZero() {
-        for (byte b : bytes) {
-            if (b != 0) {
+        for (short i = 0; i < Applet1.FIELD_WIDTH_BYTES; i++) {
+            if (bytes[i] != (byte) 0x00) {
                 return false;
             }
         }
@@ -29,14 +29,27 @@ public class GFMember {
     }
 
     public boolean isOne() {
-        for (int i = 0; i < Applet1.FIELD_WIDTH_BYTES - 1; i++) {
-            if (bytes[i] != 0) {
+        for (short i = 0; i < Applet1.FIELD_WIDTH_BYTES - 1; i++) {
+            if (bytes[i] != (byte) 0) {
                 return false;
             }
         }
-        return bytes[Applet1.FIELD_WIDTH_BYTES - 1] == 0x01;
+        return bytes[Applet1.FIELD_WIDTH_BYTES - 1] == (byte) 0x01;
     }
 
+    public void setZero() {
+        for (short i = 0; i < Applet1.FIELD_WIDTH_BYTES; i++) {
+            bytes[i] = (byte) 0x00;
+        }
+    }
+    
+    public void setOne() {
+        for (short i = 0; i < Applet1.FIELD_WIDTH_BYTES - 1; i++) {
+            bytes[i] = (byte) 0x00;
+        }
+        bytes[Applet1.FIELD_WIDTH_BYTES - 1] = (byte) 0x01;
+    }
+    
     public void squared(GFMember out) {
         // TODO
     }
@@ -54,18 +67,12 @@ public class GFMember {
             return false;
         }
         GFMember other = (GFMember) o;
-        for (int i = 0; i < Applet1.FIELD_WIDTH_BYTES; i++) {
+        for (short i = 0; i < Applet1.FIELD_WIDTH_BYTES; i++) {
             if (bytes[i] != other.bytes[i]) {
                 return false;
             }
         }
         return true;
-    }
-
-    public static GFMember createOne() {
-        GFMember one = new GFMember();
-        one.bytes[Applet1.FIELD_WIDTH_BYTES - 1] = (byte) 0x01;
-        return one;
     }
 
 }
