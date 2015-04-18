@@ -15,7 +15,8 @@ import javacard.framework.Util;
 public class GFMember {
 
     private final byte[] bytes = JCSystem.makeTransientByteArray(Applet1.FIELD_WIDTH_BYTES, JCSystem.CLEAR_ON_RESET);
-    private final byte[] squaringHelperBytes = JCSystem.makeTransientByteArray((short) (2 * Applet1.FIELD_WIDTH_BYTES), JCSystem.CLEAR_ON_RESET);
+    private final byte[] multiplicationHelperBytes = JCSystem.makeTransientByteArray((short) (Applet1.FIELD_WIDTH_BYTES + 1), JCSystem.CLEAR_ON_RESET);
+    private final byte[] reductionTempBytes = JCSystem.makeTransientByteArray((short) (2 * Applet1.FIELD_WIDTH_BYTES), JCSystem.CLEAR_ON_RESET);
     private GFSquaringTable squaringTable = new GFSquaringTable();
 
     public byte[] getBytes() {
@@ -58,28 +59,59 @@ public class GFMember {
             byte toSplit = bytes[i];
             byte upper = (byte) ((toSplit >>> 4) & 15);
             byte lower = (byte) (toSplit & 15);
-            squaringHelperBytes[(short) (2 * i)] = squaringTable.getSquared(upper);
-            squaringHelperBytes[(short) (2 * i + 1)] = squaringTable.getSquared(lower);
+            reductionTempBytes[(short) (2 * i)] = squaringTable.getSquared(upper);
+            reductionTempBytes[(short) (2 * i + 1)] = squaringTable.getSquared(lower);
         }
-        
-        for (short i = 0; i < (short) (squaringHelperBytes.length - Applet1.FIELD_WIDTH_BYTES); i++) {
-            byte highestXorPattern = (byte) ((squaringHelperBytes[i] >>> 6) & 3);
-            byte middleXorPattern = (byte) ((squaringHelperBytes[i] << 2));
-            byte lowestXorPattern = (byte) (squaringHelperBytes[i] << 1);
-            squaringHelperBytes[(short) (i + 8)] ^= highestXorPattern;
-            squaringHelperBytes[(short) (i + 9)] ^= middleXorPattern;
-            squaringHelperBytes[(short) (i + 10)] ^= lowestXorPattern;
-        }
-        
-        // WARNING: Ignoring final xor of overlapping byte here, because only the first bit of it is to be reduced,
-        // and the first bit is always zero, as the bytes are interleaved with zeros. This is not generally correct, but works here
-        // and makes the algorithm shorter.
-        
-        Util.arrayCopyNonAtomic(squaringHelperBytes, Applet1.FIELD_WIDTH_BYTES, out.getBytes(), (short) 0, Applet1.FIELD_WIDTH_BYTES);
+        reduce();
+        Util.arrayCopyNonAtomic(reductionTempBytes, Applet1.FIELD_WIDTH_BYTES, out.getBytes(), (short) 0, Applet1.FIELD_WIDTH_BYTES);
     }
 
     public void times(GFMember other, GFMember out) {
-        // TODO
+        Util.arrayFillNonAtomic(reductionTempBytes, (short) 0, (short) (2 * Applet1.FIELD_WIDTH_BYTES), (byte) 0);
+        multiplicationHelperBytes[0] = (byte) 0;
+        Util.arrayCopyNonAtomic(bytes, (short) 0, multiplicationHelperBytes, (short) 1, Applet1.FIELD_WIDTH_BYTES);
+        byte bitMask = 1;
+        for (short j = 7; j >= 0; j--) {
+            for (short i = Applet1.FIELD_WIDTH_BYTES - 1; i >= 0; i--) {
+                if ((other.bytes[i] & bitMask) != 0) {
+                    for (short k = 0; k < Applet1.FIELD_WIDTH_BYTES + 1; k++) {
+                        reductionTempBytes[(short) (i + k)] ^= multiplicationHelperBytes[k];
+                    }
+                }
+            }
+            shiftMultiplicationHelperBitsLeft();
+            bitMask = (byte) (bitMask << 1);
+        }
+        reduce();
+        Util.arrayCopyNonAtomic(reductionTempBytes, Applet1.FIELD_WIDTH_BYTES, out.getBytes(), (short) 0, Applet1.FIELD_WIDTH_BYTES);
+    }
+
+    private void shiftMultiplicationHelperBitsLeft() {
+        for (short i = 0; i < Applet1.FIELD_WIDTH_BYTES; i++) {
+            multiplicationHelperBytes[i] = (byte) (multiplicationHelperBytes[i] << 1); 
+            byte highestBitOfLowerByte = (byte) (multiplicationHelperBytes[(short) (i + 1)] & 0x80);
+            highestBitOfLowerByte = (byte) ((highestBitOfLowerByte >>> 7) & 1);
+            multiplicationHelperBytes[i] |= highestBitOfLowerByte;
+        }
+        multiplicationHelperBytes[Applet1.FIELD_WIDTH_BYTES] = (byte) (multiplicationHelperBytes[Applet1.FIELD_WIDTH_BYTES] << 1);
+    }
+
+    private void reduce() {
+        for (short i = 0; i < Applet1.FIELD_WIDTH_BYTES; i++) {
+            byte highestXorPattern = (byte) ((reductionTempBytes[i] >>> 6) & 3);
+            byte middleXorPattern = (byte) ((reductionTempBytes[i] << 2));
+            middleXorPattern = (byte) (middleXorPattern ^ ((reductionTempBytes[i] >>> 7) & 1));
+            byte lowestXorPattern = (byte) (reductionTempBytes[i] << 1);
+            reductionTempBytes[i] = 0;
+            reductionTempBytes[(short) (i + 8)] ^= highestXorPattern;
+            reductionTempBytes[(short) (i + 9)] ^= middleXorPattern;
+            reductionTempBytes[(short) (i + 10)] ^= lowestXorPattern;
+        }
+        byte highXorByte = (byte) ((reductionTempBytes[Applet1.FIELD_WIDTH_BYTES] >>> 6) & 2);
+        byte lowXorByte = (byte) ((reductionTempBytes[Applet1.FIELD_WIDTH_BYTES] >>> 7) & 1);
+        reductionTempBytes[Applet1.FIELD_WIDTH_BYTES] &= 0x7F;
+        reductionTempBytes[(short) (2 * Applet1.FIELD_WIDTH_BYTES - 2)] ^= highXorByte;
+        reductionTempBytes[(short) (2 * Applet1.FIELD_WIDTH_BYTES - 1)] ^= lowXorByte;
     }
 
     public void plus(GFMember other, GFMember out) {
