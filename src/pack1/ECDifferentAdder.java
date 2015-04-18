@@ -54,6 +54,7 @@ public class ECDifferentAdder {
                 p2.getY().setOne();
             }
             p2.getZ().setZero();
+            return;
         }
         
         step15();

@@ -13,7 +13,7 @@ import javacard.framework.JCSystem;
  */
 public class GFSquaringTable {
     
-    private byte[] squaredHalfBytes = JCSystem.makeTransientByteArray((short) 16, JCSystem.CLEAR_ON_RESET);
+    private byte[] squaredHalfBytes = new byte[16];
     
     public GFSquaringTable() {
         squaredHalfBytes[0] = (byte) 0;

@@ -115,7 +115,9 @@ public class GFMember {
     }
 
     public void plus(GFMember other, GFMember out) {
-        // TODO
+        for (short i = 0; i < Applet1.FIELD_WIDTH_BYTES; i++) {
+            out.bytes[i] = (byte) (bytes[i] ^ other.bytes[i]);
+        }
     }
 
     public boolean equals(Object o) {
