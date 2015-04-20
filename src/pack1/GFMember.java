@@ -14,11 +14,23 @@ import javacard.framework.Util;
  */
 public class GFMember {
 
-    private final byte[] bytes = JCSystem.makeTransientByteArray(Applet1.FIELD_WIDTH_BYTES, JCSystem.CLEAR_ON_RESET);
+    private final byte[] bytes;
     private final byte[] multiplicationHelperBytes = JCSystem.makeTransientByteArray((short) (Applet1.FIELD_WIDTH_BYTES + 1), JCSystem.CLEAR_ON_RESET);
     private final byte[] reductionTempBytes = JCSystem.makeTransientByteArray((short) (2 * Applet1.FIELD_WIDTH_BYTES), JCSystem.CLEAR_ON_RESET);
     private GFSquaringTable squaringTable = new GFSquaringTable();
 
+    public GFMember() {
+        this(false);
+    }
+    
+    public GFMember(boolean constant) {
+        if (constant) {
+            bytes = new byte[Applet1.FIELD_WIDTH_BYTES];
+        } else {
+            bytes = JCSystem.makeTransientByteArray(Applet1.FIELD_WIDTH_BYTES, JCSystem.CLEAR_ON_RESET);
+        }
+    }
+    
     public byte[] getBytes() {
         return bytes;
     }

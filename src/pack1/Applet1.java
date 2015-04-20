@@ -93,7 +93,7 @@ public class Applet1 extends Applet {
     }
 
     private GFMember createParamA() {
-        GFMember a = new GFMember();
+        GFMember a = new GFMember(true);
         a.getBytes()[0] = (byte) 0x4A;
         a.getBytes()[1] = (byte) 0x2E;
         a.getBytes()[2] = (byte) 0x38;
