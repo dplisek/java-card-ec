@@ -18,7 +18,7 @@ public class GFOperations {
     private final byte[] reductionTempBytes = JCSystem.makeTransientByteArray((short) (2 * Applet1.FIELD_WIDTH_BYTES), JCSystem.CLEAR_ON_RESET);
     private GFSquaringTable squaringTable = new GFSquaringTable();
 
-    public void square(GFMember in, GFMember out) {
+    public void square(GFElement in, GFElement out) {
         for (short i = 0; i < Applet1.FIELD_WIDTH_BYTES; i++) {
             byte toSplit = in.getBytes()[i];
             byte upper = (byte) ((toSplit >>> 4) & 15);
@@ -30,7 +30,7 @@ public class GFOperations {
         Util.arrayCopyNonAtomic(reductionTempBytes, Applet1.FIELD_WIDTH_BYTES, out.getBytes(), (short) 0, Applet1.FIELD_WIDTH_BYTES);
     }
     
-    public void multiply(GFMember in, GFMember other, GFMember out) {
+    public void multiply(GFElement in, GFElement other, GFElement out) {
         Util.arrayFillNonAtomic(reductionTempBytes, (short) 0, (short) (2 * Applet1.FIELD_WIDTH_BYTES), (byte) 0);
         multiplicationHelperBytes[0] = (byte) 0;
         Util.arrayCopyNonAtomic(in.getBytes(), (short) 0, multiplicationHelperBytes, (short) 1, Applet1.FIELD_WIDTH_BYTES);
@@ -78,7 +78,7 @@ public class GFOperations {
         reductionTempBytes[(short) (2 * Applet1.FIELD_WIDTH_BYTES - 1)] ^= lowXorByte;
     }
     
-    public void add(GFMember in, GFMember other, GFMember out) {
+    public void add(GFElement in, GFElement other, GFElement out) {
         for (short i = 0; i < Applet1.FIELD_WIDTH_BYTES; i++) {
             out.getBytes()[i] = (byte) (in.getBytes()[i] ^ other.getBytes()[i]);
         }

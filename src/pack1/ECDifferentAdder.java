@@ -13,21 +13,21 @@ import javacard.framework.Util;
  */
 public class ECDifferentAdder {
 
-    private GFMember a;
+    private GFElement a;
     
-    private GFMember t1 = new GFMember();
-    private GFMember t2 = new GFMember();
-    private GFMember t3 = new GFMember();
-    private GFMember t4 = new GFMember();
-    private GFMember t5 = new GFMember();
-    private GFMember t6 = new GFMember();
-    private GFMember t7 = new GFMember();
-    private GFMember t8 = new GFMember();
-    private GFMember t9 = new GFMember();
+    private GFElement t1 = new GFElement();
+    private GFElement t2 = new GFElement();
+    private GFElement t3 = new GFElement();
+    private GFElement t4 = new GFElement();
+    private GFElement t5 = new GFElement();
+    private GFElement t6 = new GFElement();
+    private GFElement t7 = new GFElement();
+    private GFElement t8 = new GFElement();
+    private GFElement t9 = new GFElement();
     
     private GFOperations operations = new GFOperations();
 
-    public ECDifferentAdder(GFMember a) {
+    public ECDifferentAdder(GFElement a) {
         this.a = a;
     }
     

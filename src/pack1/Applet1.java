@@ -19,7 +19,7 @@ public class Applet1 extends Applet {
     private ProjectivePoint q = new ProjectivePoint();
     private ProjectivePoint r = new ProjectivePoint();
     
-    private ECAdder adder = new ECAdder(createParamA());
+    private ECFullAdder adder = new ECFullAdder(createParamA(), createParamB());
     
     /**
      * Installs this applet.
@@ -92,8 +92,8 @@ public class Applet1 extends Applet {
         Util.arrayCopyNonAtomic(buf, (short) (ISO7816.OFFSET_CDATA + 5 * FIELD_WIDTH_BYTES), q.getZ().getBytes(), (short) 0, FIELD_WIDTH_BYTES);
     }
 
-    private GFMember createParamA() {
-        GFMember a = new GFMember(true);
+    private GFElement createParamA() {
+        GFElement a = new GFElement(true);
         a.getBytes()[0] = (byte) 0x4A;
         a.getBytes()[1] = (byte) 0x2E;
         a.getBytes()[2] = (byte) 0x38;
@@ -106,5 +106,20 @@ public class Applet1 extends Applet {
         a.getBytes()[9] = (byte) 0x5F;
         return a;
     }
-
+    
+    private GFElement createParamB() {
+        GFElement b = new GFElement(true);
+        b.getBytes()[0] = (byte) 0x2C;
+        b.getBytes()[1] = (byte) 0x0B;
+        b.getBytes()[2] = (byte) 0xB3;
+        b.getBytes()[3] = (byte) 0x1C;
+        b.getBytes()[4] = (byte) 0x6B;
+        b.getBytes()[5] = (byte) 0xEC;
+        b.getBytes()[6] = (byte) 0xC0;
+        b.getBytes()[7] = (byte) 0x3D;
+        b.getBytes()[8] = (byte) 0x68;
+        b.getBytes()[9] = (byte) 0xA7;
+        return b;
+    }
+    
 }

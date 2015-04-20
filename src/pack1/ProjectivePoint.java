@@ -10,20 +10,27 @@ package pack1;
  * @author Dominik
  */
 public class ProjectivePoint {
-    
-    private GFMember x = new GFMember();
-    private GFMember y = new GFMember();
-    private GFMember z = new GFMember();
 
-    public GFMember getX() {
+    private GFElement x = new GFElement();
+    private GFElement y = new GFElement();
+    private GFElement z = new GFElement();
+
+    public GFElement getX() {
         return x;
     }
 
-    public GFMember getY() {
+    public GFElement getY() {
         return y;
     }
 
-    public GFMember getZ() {
+    public GFElement getZ() {
         return z;
+    }
+
+    public boolean isZero() {
+        if (!x.isZero()) return false;
+        if (!y.isZero()) return false;
+        if (!z.isZero()) return false;
+        return true;
     }
 }

@@ -11,15 +11,15 @@ import javacard.framework.JCSystem;
  *
  * @author Dominik
  */
-public class GFMember {
+public class GFElement {
 
     private final byte[] bytes;
     
-    public GFMember() {
+    public GFElement() {
         this(false);
     }
     
-    public GFMember(boolean constant) {
+    public GFElement(boolean constant) {
         if (constant) {
             bytes = new byte[Applet1.FIELD_WIDTH_BYTES];
         } else {
@@ -63,10 +63,10 @@ public class GFMember {
     }
 
     public boolean equals(Object o) {
-        if (!(o instanceof GFMember)) {
+        if (!(o instanceof GFElement)) {
             return false;
         }
-        GFMember other = (GFMember) o;
+        GFElement other = (GFElement) o;
         for (short i = 0; i < Applet1.FIELD_WIDTH_BYTES; i++) {
             if (bytes[i] != other.bytes[i]) {
                 return false;
