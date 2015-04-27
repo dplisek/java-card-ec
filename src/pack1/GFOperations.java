@@ -13,18 +13,29 @@ import javacard.framework.Util;
  * @author Dominik
  */
 public class GFOperations {
+    
+    private static GFOperations INSTANCE;
+    
+    public static GFOperations getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new GFOperations();
+        }
+        return INSTANCE;
+    }
 
     private final byte[] multiplicationHelperBytes = JCSystem.makeTransientByteArray((short) (Applet1.FIELD_WIDTH_BYTES + 1), JCSystem.CLEAR_ON_RESET);
     private final byte[] reductionTempBytes = JCSystem.makeTransientByteArray((short) (2 * Applet1.FIELD_WIDTH_BYTES), JCSystem.CLEAR_ON_RESET);
-    private GFSquaringTable squaringTable = new GFSquaringTable();
 
+    private GFOperations() {
+    }
+    
     public void square(GFElement in, GFElement out) {
         for (short i = 0; i < Applet1.FIELD_WIDTH_BYTES; i++) {
             byte toSplit = in.getBytes()[i];
             byte upper = (byte) ((toSplit >>> 4) & 15);
             byte lower = (byte) (toSplit & 15);
-            reductionTempBytes[(short) (2 * i)] = squaringTable.getSquared(upper);
-            reductionTempBytes[(short) (2 * i + 1)] = squaringTable.getSquared(lower);
+            reductionTempBytes[(short) (2 * i)] = GFSquaringTable.getInstance().getSquared(upper);
+            reductionTempBytes[(short) (2 * i + 1)] = GFSquaringTable.getInstance().getSquared(lower);
         }
         reduce();
         Util.arrayCopyNonAtomic(reductionTempBytes, Applet1.FIELD_WIDTH_BYTES, out.getBytes(), (short) 0, Applet1.FIELD_WIDTH_BYTES);

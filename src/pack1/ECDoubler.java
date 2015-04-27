@@ -13,17 +13,15 @@ import javacard.framework.Util;
  */
 public class ECDoubler {
     
-    private GFElement c;
+    private final GFElement paramC;
     
-    private GFElement t1 = new GFElement();
-    private GFElement t2 = new GFElement();
-    private GFElement t3 = new GFElement();
-    private GFElement t4 = new GFElement();
+    private final GFElement t1 = new GFElement();
+    private final GFElement t2 = new GFElement();
+    private final GFElement t3 = new GFElement();
+    private final GFElement t4 = new GFElement();
     
-    private GFOperations operations = new GFOperations();
-
-    public ECDoubler(GFElement c) {
-        this.c = c;
+    public ECDoubler(GFElement paramC) {
+        this.paramC = paramC;
     }
 
     public void doubleElement(ProjectivePoint p1, ProjectivePoint p2) {
@@ -74,63 +72,63 @@ public class ECDoubler {
     }
     
     private void step4() {
-         Util.arrayCopyNonAtomic(c.getBytes(), (short) 0, t4.getBytes(), (short) 0, Applet1.FIELD_WIDTH_BYTES);
+         Util.arrayCopyNonAtomic(paramC.getBytes(), (short) 0, t4.getBytes(), (short) 0, Applet1.FIELD_WIDTH_BYTES);
     }
     
     private void step6() {
-        operations.multiply(t2, t3, t2);
+        GFOperations.getInstance().multiply(t2, t3, t2);
     }
     
     private void step7() {
-        operations.square(t3, t3);
+        GFOperations.getInstance().square(t3, t3);
     }
     
     private void step8() {
-        operations.multiply(t3, t4, t4);
+        GFOperations.getInstance().multiply(t3, t4, t4);
     }
     
     private void step9() {
-        operations.multiply(t1, t3, t3);
+        GFOperations.getInstance().multiply(t1, t3, t3);
     }
     
     private void step10() {
-        operations.add(t2, t3, t2);
+        GFOperations.getInstance().add(t2, t3, t2);
     }
     
     private void step11() {
-        operations.add(t1, t4, t4);
+        GFOperations.getInstance().add(t1, t4, t4);
     }
     
     private void step12() {
-        operations.square(t4, t4);
+        GFOperations.getInstance().square(t4, t4);
     }
     
     private void step13() {
-        operations.square(t4, t4);
+        GFOperations.getInstance().square(t4, t4);
     }
     
     private void step14() {
-        operations.square(t1, t1);
+        GFOperations.getInstance().square(t1, t1);
     }
     
     private void step15() {
-        operations.add(t1, t2, t2);
+        GFOperations.getInstance().add(t1, t2, t2);
     }
     
     private void step16() {
-        operations.multiply(t2, t4, t2);
+        GFOperations.getInstance().multiply(t2, t4, t2);
     }
     
     private void step17() {
-        operations.square(t1, t1);
+        GFOperations.getInstance().square(t1, t1);
     }
     
     private void step18() {
-        operations.multiply(t1, t3, t1);
+        GFOperations.getInstance().multiply(t1, t3, t1);
     }
     
     private void step19() {
-        operations.add(t1, t2, t2);
+        GFOperations.getInstance().add(t1, t2, t2);
     }
     
     private void step20() {

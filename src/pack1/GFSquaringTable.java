@@ -5,17 +5,24 @@
  */
 package pack1;
 
-import javacard.framework.JCSystem;
-
 /**
  *
  * @author Dominik
  */
 public class GFSquaringTable {
     
-    private byte[] squaredHalfBytes = new byte[16];
+    private static GFSquaringTable INSTANCE;
     
-    public GFSquaringTable() {
+    public static GFSquaringTable getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new GFSquaringTable();
+        }
+        return INSTANCE;
+    }
+    
+    private final byte[] squaredHalfBytes = new byte[16];
+    
+    private GFSquaringTable() {
         squaredHalfBytes[0] = (byte) 0;
         squaredHalfBytes[1] = (byte) 1;
         squaredHalfBytes[2] = (byte) 4;
