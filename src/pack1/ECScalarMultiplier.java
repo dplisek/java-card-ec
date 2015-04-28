@@ -5,6 +5,8 @@
  */
 package pack1;
 
+import javacard.framework.JCSystem;
+
 /**
  *
  * @author Dominik
@@ -12,6 +14,7 @@ package pack1;
 public class ECScalarMultiplier {
     
     private static ECScalarMultiplier INSTANCE;
+    private final ProjectivePoint temp = new ProjectivePoint();
     
     public static ECScalarMultiplier getInstance() {
         if (INSTANCE == null) {
@@ -23,17 +26,15 @@ public class ECScalarMultiplier {
     private ECScalarMultiplier() {
     }
     
-    public void scalarMultiply(byte[] scalar, ProjectivePoint in, ProjectivePoint out) {
+    public void scalarMultiply(short scalar, ProjectivePoint in, ProjectivePoint out) {
         out.setInfinity();
-        for (short i = (short) (Applet1.KEY_LENGTH - 1); i >= 0; i--) {
-            byte n = scalar[i];
-            for (short j = 0; j < 8; j++) {
-                if ((n & 0x01) != 0) {
-                    ECFullAdder.getInstance().add(out, in, out);
-                }
-                ECFullAdder.getInstance().getDoubler().doubleElement(in, in);
-                n = (byte) ((n >>> 1) & 0x7F);
+        temp.copyOf(in);
+        while (scalar > 0) {
+            if (scalar % 2 == 1) {
+                ECFullAdder.getInstance().add(out, temp, out);
             }
+            ECFullAdder.getInstance().getDoubler().doubleElement(temp, temp);
+            scalar = (short) (scalar / 2);
         }
     }
     

@@ -6,6 +6,7 @@
 package pack1;
 
 import javacard.framework.JCSystem;
+import javacard.framework.Util;
 import javacard.security.CryptoException;
 import javacard.security.RandomData;
 
@@ -24,7 +25,7 @@ public class RandomNumberGenerator {
         return INSTANCE;
     }
     
-    private final byte[] buf = JCSystem.makeTransientByteArray(Applet1.KEY_LENGTH, JCSystem.CLEAR_ON_RESET);
+    private final byte[] buf = JCSystem.makeTransientByteArray((short) 2, JCSystem.CLEAR_ON_RESET);
     private RandomData randomData;
 
     private RandomNumberGenerator() {
@@ -40,9 +41,9 @@ public class RandomNumberGenerator {
         }
     }
     
-    public byte[] generateRandomBytes() {
-        randomData.generateData(buf, (short) 0, Applet1.KEY_LENGTH);
-        return buf;
+    public short generateRandomShort() {
+        randomData.generateData(buf, (short) 0, (short) 2);
+        return Util.getShort(buf, (short) 0);
     }
     
 }

@@ -14,7 +14,6 @@ import javacard.framework.*;
 public class Applet1 extends Applet {
 
     public static final short FIELD_WIDTH_BYTES = 10;
-    public static final short KEY_LENGTH = 2;
 
     /**
      * Installs this applet.

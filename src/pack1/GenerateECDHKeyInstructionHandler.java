@@ -39,7 +39,7 @@ public class GenerateECDHKeyInstructionHandler {
             ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
         }
         
-        byte[] ka = RandomNumberGenerator.getInstance().generateRandomBytes();
+        short ka = RandomNumberGenerator.getInstance().generateRandomShort();
         ECScalarMultiplier.getInstance().scalarMultiply(ka, p, a);
         
         byte[] buf = apdu.getBuffer();
@@ -54,7 +54,7 @@ public class GenerateECDHKeyInstructionHandler {
         apdu.setOutgoingLength(getOutgoingLength());
         a.send(apdu);
         q.send(apdu);
-        apdu.sendBytesLong(ka, (short) 0, (short) Applet1.KEY_LENGTH);
+        sendKaUsingTempBuffer(apdu, ka, buf);
     }
 
     private void extractB(byte[] buf) {
@@ -98,7 +98,11 @@ public class GenerateECDHKeyInstructionHandler {
     }
     
     private short getOutgoingLength() {
-        return 6 * Applet1.FIELD_WIDTH_BYTES + Applet1.KEY_LENGTH;
+        return 6 * Applet1.FIELD_WIDTH_BYTES + 2;
     }
 
+    private void sendKaUsingTempBuffer(APDU apdu, short ka, byte[] buf) {
+        Util.setShort(buf, (short) 0, ka);
+        apdu.sendBytesLong(buf, (short) 0, (short) 2);
+    }
 }

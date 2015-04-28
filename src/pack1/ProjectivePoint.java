@@ -6,6 +6,8 @@
 package pack1;
 
 import javacard.framework.APDU;
+import javacard.framework.ISO7816;
+import javacard.framework.Util;
 
 /**
  *
@@ -56,6 +58,12 @@ public class ProjectivePoint {
         apdu.sendBytesLong(x.getBytes(), (short) 0, Applet1.FIELD_WIDTH_BYTES);
         apdu.sendBytesLong(y.getBytes(), (short) 0, Applet1.FIELD_WIDTH_BYTES);
         apdu.sendBytesLong(z.getBytes(), (short) 0, Applet1.FIELD_WIDTH_BYTES);        
+    }
+    
+    public void copyOf(ProjectivePoint p) {
+        Util.arrayCopyNonAtomic(p.getX().getBytes(), (short) 0, x.getBytes(), (short) 0, Applet1.FIELD_WIDTH_BYTES);
+        Util.arrayCopyNonAtomic(p.getY().getBytes(), (short) 0, y.getBytes(), (short) 0, Applet1.FIELD_WIDTH_BYTES);
+        Util.arrayCopyNonAtomic(p.getZ().getBytes(), (short) 0, z.getBytes(), (short) 0, Applet1.FIELD_WIDTH_BYTES);
     }
     
 }
