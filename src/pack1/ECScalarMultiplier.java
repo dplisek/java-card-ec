@@ -29,12 +29,12 @@ public class ECScalarMultiplier {
     public void scalarMultiply(short scalar, ProjectivePoint in, ProjectivePoint out) {
         out.setInfinity();
         temp.copyOf(in);
-        while (scalar > 0) {
-            if (scalar % 2 == 1) {
+        while (scalar != 0) {
+            if ((scalar & 0x01) == 1) {
                 ECFullAdder.getInstance().add(out, temp, out);
             }
             ECFullAdder.getInstance().getDoubler().doubleElement(temp, temp);
-            scalar = (short) (scalar / 2);
+            scalar = (short) ((scalar >>> 1) & 0x7FFF);
         }
     }
     
